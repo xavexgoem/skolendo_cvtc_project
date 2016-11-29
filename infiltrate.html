@@ -1,0 +1,28 @@
+<canvas id="canvas" width="400" height="400"></canvas> 
+<canvas id="canvas2" width="400" height="400"></canvas>
+<script src="map.js"></script>
+<script>
+    var blackness = 10;
+    function drawRoom(room, scale, color) {
+        color = color ? color : blackness;
+        scale = scale ? scale : 1;
+        var canvas = document.getElementById('canvas').getContext('2d');
+        canvas.fillStyle = 'rgb('+color+','+color+','+color+')';
+        color += 30;
+        room.color = blackness;
+        //canvas.fillRect(room.x, room.y, room.width, room.height);
+        canvas.fillRect(room.x*scale, room.y*scale, room.width*scale, room.height*scale);
+    }
+
+    function randomChoice(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    makeMap();
+</script>
+
+
