@@ -74,37 +74,9 @@ function isInRoom(rooms, x, y) {
     return false;
 }
 
-function distanceToNearestWall(fromX, fromY, angle) {
-    // construct a vector 
 
-    var vecX = Math.cos(angle);
-    var vecY = Math.sin(angle);
-    //drawRoom({x: vecX, y: vecY, height: 1, width: 1}, 3, 150);
-
-    var distance = 1;
-    const MOVING_BY = 1;
-    while(true) {
-        var modX = fromX + (vecX * distance);
-        var modY = fromY + (vecY * distance);
-        if(!atMap(modX, modY)) {
-            modX = fromX + (vecX * (distance));
-            modY = fromY + (vecY * (distance));
-            break;
-        }
-        distance += MOVING_BY;
-    }
-    drawRoom({x: modX, y: modY, height:1, width: 1},3,200);
-    return [modX, modY];
-}
-
-function atMap(x, y) {
-    // NOTE - the map is arranged y, x
-    return mapArray[Math.round(y)][Math.round(x)];
-}
-
-var mapArray = [];
+var map = {};
 function makeMapArray(rooms) {
-    // find boundaries of the map
     var largestX = 0;
     var largestY = 0;
     for(var i = 0; i < rooms.length; ++i) {
@@ -116,38 +88,21 @@ function makeMapArray(rooms) {
         }
     }
 
-    var imgArray = new Uint8ClampedArray(largestX * largestY * 4);
-    var index = 0;
-    for(var y = 0; y < largestY; ++y) {
-        var column = [];
-        for(var x = 0; x < largestX; ++x) {
-            // is (x,y) located in any room?
-            if(isInRoom(rooms, x, y)) {
-                column.push(true);
-                imgArray[index] = 255;
-                imgArray[index + 1] = 255;
-                imgArray[index + 2] = 255;
-                imgArray[index + 3] = 255;
-            } else {
-                column.push(false);
-                imgArray[index] = 0;
-                imgArray[index + 1] = 0;
-                imgArray[index + 2] = 0;
-                imgArray[index + 3] = 255;
-            }
-            index += 4;
+    // this is a 1d array for 2d data, containing values True or False
+    // it's super important that accessing the array is done through
+    // other functions, since 2d accessors won't work.
+    var mapArray = new Array(largestX * largestY);
+    for(var y = 0; y < largestY; y++) {
+        var arrayColumn = largestX * y;
+        for(var x = 0; x < largestX; x++) {
+            mapArray[arrayColumn + x] = isInRoom(rooms, x, y);
         }
-        mapArray.push(column);
     }
 
-    console.log(imgArray);
-    var imgData = new ImageData(imgArray, largestX, largestY);
-    var canvas = document.getElementById('canvas2').getContext('2d');
-    canvas.putImageData(imgData, 0, 0);
-
-
+    map.mapArray = mapArray;
+    map.width = largestX;
+    map.height = largestY;
 }
-
 /* Map generation procedure:
    1. Select random points on the map as room locations (top left corner)
    2. Make rooms of random height and width
