@@ -105,8 +105,7 @@ function distanceToWall(x, y, direction) {
     x -= moveX;
     y -= moveY;
 
-    if(DEBUG) drawRoom({x:x,y:y,height:1,width:1},3,200);
-    return distance;
+    return [x, y];
 }
 
 var map = {};

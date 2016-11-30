@@ -1,19 +1,21 @@
-<!-- <canvas id="canvas" width="400" height="400"></canvas> -->
-<script src="map.js"></script>
+<style>
+    #canvas {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
+</style>
+<canvas id="canvas" width="400" height="400">
+    Your browser does not support the &lt;canvas&gt; element!
+</canvas>
+<script src="js/map.js"></script>
+<script src="js/canvass.js"></script>
 <script>
     var blackness = 10;
-    function drawRoom(room, scale, color) {
-        color = color ? color : blackness;
-        scale = scale ? scale : 1;
-        var canvas = document.getElementById('canvas').getContext('2d');
-        canvas.fillStyle = 'rgb('+color+','+color+','+color+')';
-        color += 30;
-        room.color = blackness;
-        //canvas.fillRect(room.x, room.y, room.width, room.height);
-        canvas.fillRect(room.x*scale, room.y*scale, room.width*scale, room.height*scale);
-    }
-
-    function randomChoice(arr) {
+        function randomChoice(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
     }
 

@@ -1,36 +1,36 @@
+const SCALE = 5;
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 var centerX = canvas.width / 2;
-var centerY = canvas.width / 2
+var centerY = canvas.width / 2;
 
-function drawPointInCenter(color, scale) {
-  scale = scale ? scale : 1;
+function drawCenterPoint(color) {
   context.fillStyle = color;
-  context.fillRect(centerX, centerY, scale, scale);
+  context.fillRect(centerX, centerY, SCALE, SCALE);
 }
 
-function drawPointFromCenter(distance, direction, color, scale) {
-  scale = scale ? scale : 1; // in case we don't pass scale
+function drawPointFromCenter(distance, direction, color) {
   var pointX, pointY;
+
   switch(direction) {
     case FACE_NORTH:
       pointX = centerX;
-      pointY = centerY - (distance * scale);
+      pointY = centerY - (distance * SCALE);
       break;
     case FACE_SOUTH:
       pointX = centerX;
-      pointY = centerY + (distance * scale);
+      pointY = centerY + (distance * SCALE);
       break;
     case FACE_WEST:
-      pointX = centerX - (distance * scale);
+      pointX = centerX - (distance * SCALE);
       pointY = centerY;
       break;
     case FACE_EAST:
-      pointX = centerX + (distance * scale);
+      pointX = centerX + (distance * SCALE);
       pointY = centerY;
       break;
   }
   context.fillStyle = color;
-  context.fillRect(pointX, pointY, scale, scale);
+  context.fillRect(pointX, pointY, SCALE, SCALE);
 }
 
