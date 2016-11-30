@@ -1,3 +1,4 @@
+const DEBUG = false;
 const FACE_NORTH = 1;
 const FACE_EAST = 2;
 const FACE_SOUTH = 3;
@@ -81,7 +82,7 @@ function atMap(x, y) {
     return map.mapArray[(y * map.width) + x];
 }
 
-function findNearestWall(x, y, direction) {
+function distanceToWall(x, y, direction) {
     var moveX, moveY;
     switch(direction) {
         case FACE_NORTH:
@@ -93,65 +94,36 @@ function findNearestWall(x, y, direction) {
         case FACE_WEST:
             moveX = -1; moveY = 0; break;
     }
-    while(atMap(x, y)) {
+    var distance = 0;
+    do {
         x += moveX;
         y += moveY; 
-        console.log(y);
-    }
+        distance += 1;
+    } while(atMap(x, y));
     // the result of that will be off by one, so:
     x -= moveX;
     y -= moveY;
 
-    drawRoom({x:x,y:y,height:1,width:1},3,200);
+    if(DEBUG) drawRoom({x:x,y:y,height:1,width:1},3,200);
+    return distance;
 }
 
 var map = {};
-function makeMapArray(rooms) {
-    var largestX = 0;
-    var largestY = 0;
-    for(var i = 0; i < rooms.length; ++i) {
-        if (rooms[i].x + rooms[i].width > largestX) {
-            largestX = rooms[i].x + rooms[i].width;
-        }
-        if (rooms[i].y + rooms[i].height > largestY) {
-            largestY = rooms[i].y + rooms[i].height;
-        }
-    }
+function makeMapArray(rooms, mapWidth, mapHeight) {
+    
 
     // this is a 1d array for 2d data, containing values True or False
     // it's super important that accessing the array is done through
     // other functions, since 2d accessors won't work.
-    var mapArray = new Array(largestX * largestY);
-    for(var y = 0; y < largestY; y++) {
-        var arrayColumn = largestX * y;
-        for(var x = 0; x < largestX; x++) {
+    var mapArray = new Array(mapWidth * mapHeight);
+    for(var y = 0; y < mapHeight; y++) {
+        var arrayColumn = mapWidth * y;
+        for(var x = 0; x < mapWidth; x++) {
             mapArray[arrayColumn + x] = isInRoom(rooms, x, y);
         }
     }
 
-    // For debugging purposes, we want to make sure that the representation
-    // we set up is accurate to what we've already drawn
-    var canvasArray = new Uint8ClampedArray(largestX * largestY * 4);
-    for(i = 0; i < mapArray.length; i++) {
-        if(mapArray[i] === true) {
-            canvasArray[(i * 4)] = 0;
-            canvasArray[(i * 4) +1] = 0;
-            canvasArray[(i * 4) +2] = 0;
-            canvasArray[(i * 4) +3] = 255;
-        } else {
-            canvasArray[(i * 4)] = 255;
-            canvasArray[(i * 4) +1] = 255;
-            canvasArray[(i * 4) +2] = 255;
-            canvasArray[(i * 4) +3] = 255;
-        }
-    }
-    var imgData = new ImageData(canvasArray, largestX, largestY);
-    var context = document.getElementById('canvas').getContext('2d');
-    context.putImageData(imgData, 0, 0);
-
-    map.mapArray = mapArray;
-    map.width = largestX;
-    map.height = largestY;
+    return mapArray;
 }
 /* Map generation procedure:
    1. Select random points on the map as room locations (top left corner)
@@ -166,6 +138,18 @@ function makeMap() {
         var roomX = randomInt(0, 75);
         var roomY = randomInt(0, 75);
         rooms.push(makeRandomRoom(roomX, roomY));    
+    }
+
+    // Get the width and height of the map
+    var largestX = 0;
+    var largestY = 0;
+    for(var i = 0; i < rooms.length; ++i) {
+        if (rooms[i].x + rooms[i].width > largestX) {
+            largestX = rooms[i].x + rooms[i].width;
+        }
+        if (rooms[i].y + rooms[i].height > largestY) {
+            largestY = rooms[i].y + rooms[i].height;
+        }
     }
 
     var roomGroups = [];
@@ -203,17 +187,20 @@ function makeMap() {
         if(startingRoom.type != "passage") break;
     }
 
-    var startingPointX = randomInt(startingRoom.x, startingRoom.x + startingRoom.width-1);
-    var startingPointY = randomInt(startingRoom.y, startingRoom.y + startingRoom.height-1);
-    drawRoom({x: startingPointX, y: startingPointY, width: 1, height: 1}, 3, 100);        
+    // choose a random point within that room to be the starting location
+    var startX = randomInt(startingRoom.x, startingRoom.x + startingRoom.width-1);
+    var startY = randomInt(startingRoom.y, startingRoom.y + startingRoom.height-1);
+
     // find the room whose x,y is furthest from the starting xy
-    var furthestRoom = startingRoom;
+    var furthestRoom = startingRoom; // prime it so we have some room with distance
     furthestRoom.distance = 0;
     for(var i = 0; i < rooms.length; ++i) {
         if(rooms[i].type == "room") {
-            var sideA = startingPointX - rooms[i].x;
-            var sideB = startingPointY - rooms[i].y;
-            var distance = Math.sqrt(sideA * sideA + sideB * sideB); // Pythagora
+            // Pythagorean theorem to find distance between starting point
+            // and our randomly-chosen room's x,y
+            var sideA = startX - rooms[i].x;
+            var sideB = startY - rooms[i].y;
+            var distance = Math.sqrt(sideA * sideA + sideB * sideB);
             if (distance > furthestRoom.distance) {
                 furthestRoom = rooms[i];
                 furthestRoom.distance = distance;
@@ -221,18 +208,22 @@ function makeMap() {
         }
     }
 
+    // like with starting point, find a random point in this room to be our end point
     var endingX = randomInt(furthestRoom.x, furthestRoom.x + furthestRoom.width - 1);
     var endingY = randomInt(furthestRoom.y, furthestRoom.y + furthestRoom.height - 1);
 
-    drawRoom({x: endingX, y: endingY, width: 1, height: 1}, 3, 200);
-    makeMapArray(rooms);
-    map.startX = startingPointX;
-    map.startY = startingPointY;
+    map.mapArray = makeMapArray(rooms, largestX, largestY);
+    map.width = largestX;
+    map.height = largestY;
+    map.startX = startX;
+    map.startY = startY;
+    map.endX = endingX;
+    map.endY = endingY;
     map.rooms = rooms;
 }
 
 function drawRooms(rooms) {
     for(var i = 0; i < rooms.length; i++) {
-        drawRoom(rooms[i], 1, 100);
+        drawRoom(rooms[i], 3);
     }
 }
