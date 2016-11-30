@@ -129,6 +129,26 @@ function makeMapArray(rooms) {
         }
     }
 
+    // For debugging purposes, we want to make sure that the representation
+    // we set up is accurate to what we've already drawn
+    var canvasArray = new Uint8ClampedArray(largestX * largestY * 4);
+    for(i = 0; i < mapArray.length; i++) {
+        if(mapArray[i] === true) {
+            canvasArray[(i * 4)] = 0;
+            canvasArray[(i * 4) +1] = 0;
+            canvasArray[(i * 4) +2] = 0;
+            canvasArray[(i * 4) +3] = 255;
+        } else {
+            canvasArray[(i * 4)] = 255;
+            canvasArray[(i * 4) +1] = 255;
+            canvasArray[(i * 4) +2] = 255;
+            canvasArray[(i * 4) +3] = 255;
+        }
+    }
+    var imgData = new ImageData(canvasArray, largestX, largestY);
+    var context = document.getElementById('canvas').getContext('2d');
+    context.putImageData(imgData, 0, 0);
+
     map.mapArray = mapArray;
     map.width = largestX;
     map.height = largestY;
@@ -176,10 +196,6 @@ function makeMap() {
         roomGroups.splice(indexGroup2, 1);
     }
 
-    for(var i = 0; i < rooms.length; ++i) {
-        drawRoom(rooms[i], 3);
-    }
-
     // choose a random room as a starting point
     var startingRoom;
     while(true) {
@@ -189,9 +205,7 @@ function makeMap() {
 
     var startingPointX = randomInt(startingRoom.x, startingRoom.x + startingRoom.width-1);
     var startingPointY = randomInt(startingRoom.y, startingRoom.y + startingRoom.height-1);
-
     drawRoom({x: startingPointX, y: startingPointY, width: 1, height: 1}, 3, 100);        
-
     // find the room whose x,y is furthest from the starting xy
     var furthestRoom = startingRoom;
     furthestRoom.distance = 0;
@@ -215,4 +229,10 @@ function makeMap() {
     map.startX = startingPointX;
     map.startY = startingPointY;
     map.rooms = rooms;
+}
+
+function drawRooms(rooms) {
+    for(var i = 0; i < rooms.length; i++) {
+        drawRoom(rooms[i], 1, 100);
+    }
 }
