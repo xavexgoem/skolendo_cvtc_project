@@ -1,3 +1,7 @@
+const FACE_NORTH = 1;
+const FACE_EAST = 2;
+const FACE_SOUTH = 3;
+const FACE_WEST = 4;
 function makeRandomRoom(x, y) {
 
     var width = randomInt(5, 20);
@@ -31,7 +35,6 @@ function isIntersected(r1, r2) {
 }
 
 function makePassage(room1, room2) {
-    // select a random point in each room:
     var startX = room1.connectPointX;
     var startY = room1.connectPointY;
     var endX = room2.connectPointX;
@@ -74,6 +77,33 @@ function isInRoom(rooms, x, y) {
     return false;
 }
 
+function atMap(x, y) {
+    return map.mapArray[(y * map.width) + x];
+}
+
+function findNearestWall(x, y, direction) {
+    var moveX, moveY;
+    switch(direction) {
+        case FACE_NORTH:
+            moveX = 0; moveY = -1; break;
+        case FACE_SOUTH:
+            moveX = 0; moveY = 1; break;
+        case FACE_EAST:
+            moveX = 1; moveY = 0; break;
+        case FACE_WEST:
+            moveX = -1; moveY = 0; break;
+    }
+    while(atMap(x, y)) {
+        x += moveX;
+        y += moveY; 
+        console.log(y);
+    }
+    // the result of that will be off by one, so:
+    x -= moveX;
+    y -= moveY;
+
+    drawRoom({x:x,y:y,height:1,width:1},3,200);
+}
 
 var map = {};
 function makeMapArray(rooms) {
@@ -113,8 +143,8 @@ function makeMap() {
     var numRooms = randomInt(4, 8);
     var rooms = [];
     for(var i = 0; i < numRooms; ++i) {
-        var roomX = randomInt(1, 75);
-        var roomY = randomInt(1, 75);
+        var roomX = randomInt(0, 75);
+        var roomY = randomInt(0, 75);
         rooms.push(makeRandomRoom(roomX, roomY));    
     }
 
@@ -160,10 +190,6 @@ function makeMap() {
     var startingPointX = randomInt(startingRoom.x, startingRoom.x + startingRoom.width-1);
     var startingPointY = randomInt(startingRoom.y, startingRoom.y + startingRoom.height-1);
 
-    // TEST
-    startingXY.push(startingPointX, startingPointY);
-
-
     drawRoom({x: startingPointX, y: startingPointY, width: 1, height: 1}, 3, 100);        
 
     // find the room whose x,y is furthest from the starting xy
@@ -186,5 +212,7 @@ function makeMap() {
 
     drawRoom({x: endingX, y: endingY, width: 1, height: 1}, 3, 200);
     makeMapArray(rooms);
+    map.startX = startingPointX;
+    map.startY = startingPointY;
+    map.rooms = rooms;
 }
-var startingXY = [];
