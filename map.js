@@ -68,8 +68,8 @@ function makePassage(room1, room2) {
 function isInRoom(rooms, x, y) {
     for(var i = 0; i < rooms.length; i++) {
         var r = rooms[i];
-        if(x >= r.x && x <= r.x + r.width) {
-            if(y >= r.y && y <= r.y + r.height) {
+        if(x >= r.x && x < r.x + r.width) {
+            if(y >= r.y && y < r.y + r.height) {
                 return true;
             }
         }
