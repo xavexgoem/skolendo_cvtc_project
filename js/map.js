@@ -105,7 +105,7 @@ function distanceToWall(x, y, direction) {
     x -= moveX;
     y -= moveY;
 
-    return [x, y];
+    return distance;
 }
 
 var map = {};

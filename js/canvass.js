@@ -1,15 +1,20 @@
-const SCALE = 5;
+const SCALE = 1;
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 var centerX = canvas.width / 2;
 var centerY = canvas.width / 2;
+
+function blankCanvas() {
+  context.fillStyle = "white";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+}
 
 function drawCenterPoint(color) {
   context.fillStyle = color;
   context.fillRect(centerX, centerY, SCALE, SCALE);
 }
 
-function drawPointFromCenter(distance, direction, color) {
+function drawPointFromCenter(distance, direction) {
   var pointX, pointY;
 
   switch(direction) {
@@ -30,7 +35,12 @@ function drawPointFromCenter(distance, direction, color) {
       pointY = centerY;
       break;
   }
+  return [pointX, pointY];
+}
+
+function drawAtPoint(x, y, color) {
+  color = color ? color : "black";
   context.fillStyle = color;
-  context.fillRect(pointX, pointY, SCALE, SCALE);
+  context.fillRect(x, y, SCALE, SCALE);
 }
 
