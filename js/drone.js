@@ -53,13 +53,12 @@ function moveDrone(event) {
     // we're outside the map, so reset the drone's x,y
     drone.x = currentX;
     drone.y = currentY;
-  } else {
-    
-    // get the wall infront of us, add it to the history 
-    var distance = distanceToWall(drone.x, drone.y, drone.facing);
-    var distantPoint = findPointFromCenter(distance, drone.facing);
-    updateCanvas(distantPoint[0], distantPoint[1]);
-  }
+  } 
+
+  // get the wall infront of us, add it to the history 
+  var distance = distanceToWall(drone.x, drone.y, drone.facing);
+  var distantPoint = findPointFromCenter(distance, drone.facing);
+  updateCanvas(distantPoint[0], distantPoint[1]);
 }
 
 function findPointFromCenter(distance, direction) {
