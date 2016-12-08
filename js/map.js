@@ -201,9 +201,9 @@ function makeMap() {
   var startY = randomInt(startingRoom.y, startingRoom.y + startingRoom.height-1);
 
   // find the room whose x,y is furthest from the starting xy
-  var furthestRoom = startingRoom; // prime it so we have some room with distance
-  furthestRoom.distance = 0;
-  for(var i = 0; i < rooms.length; ++i) {
+  var furthestRoom = startingRoom; 
+  furthestRoom.distance = 0; // prime it so we have some room with distance
+  for(var i = 0; i < rooms.length; i++) {
     if(rooms[i].type == "room") {
       // Pythagorean theorem to find distance between starting point
       // and our randomly-chosen room's x,y
@@ -230,4 +230,3 @@ function makeMap() {
   map.endY = endingY;
   map.rooms = rooms;
 }
-
