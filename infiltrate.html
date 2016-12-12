@@ -7,10 +7,16 @@
         right: 0;
         margin: auto;
     }
+
+    #win_text {
+      margin: auto;
+      width: 50%;
+    }
 </style>
 <canvas id="canvas" width="400" height="400">
     Your browser does not support the &lt;canvas&gt; element!
 </canvas>
+<div id="win_text"></div>
 <script src="js/map.js"></script>
 <script src="js/canvass.js"></script>
 <script src="js/drone.js"></script>
@@ -25,6 +31,7 @@
     }
 
     makeMap();
+    startDrone(map.startX, map.startY);
 </script>
 
 

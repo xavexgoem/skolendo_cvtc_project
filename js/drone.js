@@ -18,18 +18,19 @@ function updateCanvas(pointX, pointY) {
   for(var i = 0; i < wallHistory.length; i++) {
     drawAtPoint(wallHistory[i][0], wallHistory[i][1]);
   }
+  // finally, draw the status
+  drawStatus(drone.x, drone.y, map.endX, map.endY);
 }
 
 const KEY_LEFT = 37;
 const KEY_UP = 38;
 const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
-const KEY_W = 119;
-const KEY_A = 97;
-const KEY_S = 115;
-const KEY_D = 100;
+const KEY_W = 87;
+const KEY_A = 65;
+const KEY_S = 83;
+const KEY_D = 68;
 function moveDrone(event) {
-  console.log(event.keyCode);
   var currentX = drone.x;
   var currentY = drone.y;
   var currentFacing = drone.facing;
@@ -55,16 +56,22 @@ function moveDrone(event) {
       drone.facing = FACE_EAST;
       drone.x += 1;
       break;
-    default: return;
+    default: return; // it wasn't one of our keys, do we won't move
   }
 
-  var mustUpdateHistory = true;
+  var mustUpdateHistory = true; // flag to update history later. If the drone doesn't move, don't update.
   if(!isOnFloor(drone.x, drone.y)) {
     // we're outside the map, so reset the drone's x,y
     drone.x = currentX;
     drone.y = currentY;
-    mustUpdateHistory = false;
+    mustUpdateHistory = false; // we didn't move, so don't move anything in history
   } 
+
+  // Are we at the end point?  If so, we win!
+  if(drone.x == map.endX && drone.y == map.endY) {
+    win();
+    return;
+  }
 
   // if the facing changed: 1. Add the last
   // point to the wallHistory, and 2. check if the current
@@ -77,11 +84,11 @@ function moveDrone(event) {
     if(mustUpdateHistory) {
       updateHistory();
       // Does the distantPoint == a point in history? If so, remove from history
-      // JS doesn't provide an easy way of finding an array within an array,
-      // so we have to do this the hard way with for loops
+      // since we'll be drawing that point independently
       for(var i = 0; i < wallHistory.length; i++) {
         if(wallHistory[i][0] == distantPoint[0] && wallHistory[i][1] == distantPoint[1]) {
-          wallHistory.splice(i, 1);
+          wallHistory.splice(i, 1); // remove 1 element at index i
+          break;
         }
       }
     }
@@ -92,6 +99,7 @@ function moveDrone(event) {
   updateCanvas(distantPoint[0], distantPoint[1]);
 }
 
+// Moves every point in wallHistory opposite the direction we moved
 function updateHistory() {
   for(var i = 0; i < wallHistory.length; i++) {
     switch(drone.facing) {
@@ -110,6 +118,9 @@ function updateHistory() {
     }
   }
 }
+
+// given a point's distance from us and the direction it is from us,
+// return the x,y of that point relative to the canvas's center.
 function findPointFromCenter(distance, direction) {
   var pointX, pointY;
 
@@ -139,7 +150,14 @@ function startDrone(startingX, startingY) {
   drone.facing = FACE_NORTH;
 
   drawCenterPoint('green');
+  drawStatus(drone.x, drone.y, map.endX, map.endY);
 
   // set up key events
-  document.addEventListener('keypress', moveDrone);
+  document.addEventListener('keydown', moveDrone);
 } 
+
+function win() { 
+  // unbind keyboard events
+  document.removeEventListener('keydown', moveDrone);
+  drawWin();
+}
