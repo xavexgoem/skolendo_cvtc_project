@@ -1,4 +1,4 @@
-const SCALE = 9;
+const SCALE = 9; // This is what we scale every point by, so the game isn't teeny-tiny
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 var centerX = canvas.width / 2;
@@ -17,18 +17,32 @@ function drawCenterPoint(color) {
 }
 
 function drawStatus(droneX, droneY, mapX, mapY) {
+  context.strokeStyle = "red";
+  context.fillStyle = "white";
   // player's X
+  context.fillRect(1, 1, 70, 30); // We have to fill the rectangle; strokeRect won't draw the interior
+  context.strokeRect(1, 1, 70, 30);
+  // player's Y
+  context.fillRect(70, 1, 70, 30);
+  context.strokeRect(70, 1, 70, 30);
+  // goal's X
   context.strokeStyle = "green";
-  context.strokeRect(1, 1, 50, 30);
-  context.fillStyle = "black";
-  context.fillText(droneX, 10, 15);
-  context.strokeRect(55, 1, 50, 30);
-  context.fillText(droneY, 65, 15);
-  context.strokeRect(115, 1, 50, 30);
-  context.fillText(mapX, 125, 15);
-  context.strokeRect(170, 1, 50, 30);
-  context.fillText(mapY, 180, 15);
-  context.fillText("w,a,s,d or arrow keys", 240, 15);
+  context.fillRect(150, 1, 70, 30);
+  context.strokeRect(150, 1, 70, 30);
+  // goal's Y
+  context.fillRect(220, 1, 70, 30);
+  context.strokeRect(220, 1, 70, 30);
+  // Now fill the text (we couldn't do this before, because fillStyle was set to white
+  context.fillStyle="black";
+  context.fillText("Your X: " + droneX, 5, 15);
+  context.fillText("Your Y: " + droneY, 75, 15);
+  context.fillText("Goal X: " + map.endX, 160, 15);
+  context.fillText("Goal Y: " + mapY, 230, 15);
+
+  // keyboard guide
+  context.fillStyle = "red"
+  context.fillText("w,a,s,d to move", 300, 12);
+  context.fillText("Reach the goal", 300, 25);
 }
   
 

@@ -1,0 +1,97 @@
+==Map Generator Pseudocode==
+
+numRooms = random number between 4 and 8
+rooms = []
+for numRooms {
+	randomX = random number between 1 and 75
+	randomY = random number between 1 and 75
+	width = random number between 4 and 10
+	height = random number between 4 and 10
+	newRoom = (randomX, randomY, width, height)
+	rooms.push(newRoom)
+}
+
+groups = [] // an array of an array of rooms that are connected to each other.
+for numRooms, index i {
+	for numRooms, index j {
+		if rooms[i] is connected to rooms[j] {
+			groups.push(rooms[i], rooms[j])
+		}
+	}
+}
+
+while groups.length > 1 {
+	room1 = a random room in a random room group
+	room2 = a random room in another random room group
+	widePassage.x, widePassage.y = random point in room1
+	widePassage.endX = random point in room2
+	tallPassage.x = widePassage.x + widePassage.width
+	tallPassage.y = widePassage.y
+	tallPassage.endY = same random point in room2
+}
+
+entireMap = array of map’s width*height, each value set to “false”
+for entireMap, index row {
+	for row, index column { // this will be a point in the map
+		if entireMap[row][column] is in a room {
+			entireMap[row][column] = true
+		}
+	}
+}
+
+== Drone pseudocode ==
+
+when there’s a keyboard event {
+	previousX = drone.x
+	previousY = drone.y
+	previousFacing = drone.facing
+	if key is “w” // move up
+		drone.y -= 1 // towards the top
+		drone.facing = north
+	else if key is “a” // move left
+		drone.x -= 1 // towards the left
+		drone.facing = west
+	else if key is “s” /// move down
+		drone.y += 1
+		drone.facing = south
+	else if key is “d” // move right
+		drone.x += 1
+		drone.facing = east
+	else
+		continue // return to the top and wait; we don’t handle any other inputs
+	
+	if drone is now in a wall {
+		// whoops - reset the drone’s position
+		drone.x = previousX
+		drone.y = previousY
+	}
+
+	if drone.facing != previousFacing { // we turned
+		if drone is facing north {
+			wallY = y of the first wall ahead of us
+			wallX = drone.x
+		}
+		if drone is facing west {
+			wallY = drone.y
+			wallX = x of the first wall ahead of us
+		}
+		if drone is facing east {
+			wallY = drone.y
+			wallX = x of the first wall ahead of us
+		}
+		if drone is facing south {
+			wallY = y of the first wall ahead of us
+			wallX = drone.x
+		}
+	} // else: do nothing; we have everything we need; the x,y didn’t change from last time
+
+	updateCanvas(wallX, wallY)
+}
+
+== Canvas pseudocode ==
+
+updateCanvas(wallX, wallY) {
+	draw a white rectangle equal to the canvas’s x, y, width, and height // blanks
+	draw point at (drone.x, drone.y) // the drone
+	draw point at (wallX, wallY) // the wall
+}

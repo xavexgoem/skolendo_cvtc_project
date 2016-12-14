@@ -1,0 +1,18 @@
+TESTS
+
+Input: User presses “r”, a key we don’t handle
+Expected: Nothing happens
+Actual: Nothing happens
+
+Input: User presses “a” 1,000 times
+Expected: The drone stops at a wall
+Actual: The drone stops at a wall
+
+Input: User navigates drone to the ending point for the game
+Expected: “You win!” is displayed
+Actual: “You win!” is displayed
+
+Input: After receiving “you win!” text, user presses “a”
+Expected: Nothing - it should stay on “you win!”
+Actual: Nothing
+

@@ -7,6 +7,10 @@ var drone = {
 var lastPoint = []; // x, y of whatever's in front of us, important for wallHistory
 var wallHistory = [];
 
+// updates the canvas with the game's current state
+// (Not sure whether this belongs in canvas.js,
+// but since it's so specific to the drone, I figured
+// it's best here...?)
 function updateCanvas(pointX, pointY) {
   // blank everything
   blankCanvas();

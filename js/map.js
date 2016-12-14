@@ -4,6 +4,16 @@ const FACE_SOUTH = 3;
 const FACE_WEST = 4;
 var map = {};
 
+// Given an array, returns a random element of that array
+function randomChoice(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// Returns an integer between min and max
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 // This is more of a convenience constructor - we have a lot of
 // functions that need to return a room object, and this removes
 // a lot of {object_creation: overhead}, while keeping things consistent
@@ -57,10 +67,8 @@ function isPointInRoom(rooms, x, y) {
 }
 
 // Tests whether point x,y is in a room or in a wall
-// (this can maybe be removed, since isPointInRoom covers this
-// difference being that this tests the mapArray, and isInPointInRoom
-// tests rooms. But it might be handy later, if we have different
-// values in the mapArray other than True and False)
+// this is functionally the same as isPointInRoom,
+// but it checks against the mapArray and not the rooms
 function isOnFloor(x, y) {
   return map.mapArray[(y * map.width) + x];
 }
